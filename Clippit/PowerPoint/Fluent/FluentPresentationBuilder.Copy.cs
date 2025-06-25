@@ -939,36 +939,36 @@ internal sealed partial class FluentPresentationBuilder
             switch (mediaRelationshipType)
             {
                 case "media":
-                {
-                    var mrr = newContentPart switch
                     {
-                        SlidePart part => part.AddMediaReferenceRelationship(newPart),
-                        SlideLayoutPart part => part.AddMediaReferenceRelationship(newPart),
-                        SlideMasterPart part => part.AddMediaReferenceRelationship(newPart),
-                        _ => null,
-                    };
+                        var mrr = newContentPart switch
+                        {
+                            SlidePart part => part.AddMediaReferenceRelationship(newPart),
+                            SlideLayoutPart part => part.AddMediaReferenceRelationship(newPart),
+                            SlideMasterPart part => part.AddMediaReferenceRelationship(newPart),
+                            _ => null,
+                        };
 
-                    id = mrr?.Id;
-                    relationshipType = "http://schemas.microsoft.com/office/2007/relationships/media";
-                    break;
-                }
+                        id = mrr?.Id;
+                        relationshipType = "http://schemas.microsoft.com/office/2007/relationships/media";
+                        break;
+                    }
                 case "video":
-                {
-                    var vrr = newContentPart switch
                     {
-                        SlidePart part => part.AddVideoReferenceRelationship(newPart),
-                        HandoutMasterPart part => part.AddVideoReferenceRelationship(newPart),
-                        NotesMasterPart part => part.AddVideoReferenceRelationship(newPart),
-                        NotesSlidePart part => part.AddVideoReferenceRelationship(newPart),
-                        SlideLayoutPart part => part.AddVideoReferenceRelationship(newPart),
-                        SlideMasterPart part => part.AddVideoReferenceRelationship(newPart),
-                        _ => null,
-                    };
+                        var vrr = newContentPart switch
+                        {
+                            SlidePart part => part.AddVideoReferenceRelationship(newPart),
+                            HandoutMasterPart part => part.AddVideoReferenceRelationship(newPart),
+                            NotesMasterPart part => part.AddVideoReferenceRelationship(newPart),
+                            NotesSlidePart part => part.AddVideoReferenceRelationship(newPart),
+                            SlideLayoutPart part => part.AddVideoReferenceRelationship(newPart),
+                            SlideMasterPart part => part.AddVideoReferenceRelationship(newPart),
+                            _ => null,
+                        };
 
-                    id = vrr?.Id;
-                    relationshipType = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/video";
-                    break;
-                }
+                        id = vrr?.Id;
+                        relationshipType = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/video";
+                        break;
+                    }
             }
             temp.DataPart = newPart;
             temp.AddContentPartRelTypeResourceIdTupple(newContentPart, relationshipType, id);
@@ -998,36 +998,36 @@ internal sealed partial class FluentPresentationBuilder
                 switch (mediaRelationshipType)
                 {
                     case "media":
-                    {
-                        var mrr = newContentPart switch
                         {
-                            SlidePart part => part.AddMediaReferenceRelationship(newPart),
-                            SlideLayoutPart part => part.AddMediaReferenceRelationship(newPart),
-                            SlideMasterPart part => part.AddMediaReferenceRelationship(newPart),
-                            _ => null,
-                        };
+                            var mrr = newContentPart switch
+                            {
+                                SlidePart part => part.AddMediaReferenceRelationship(newPart),
+                                SlideLayoutPart part => part.AddMediaReferenceRelationship(newPart),
+                                SlideMasterPart part => part.AddMediaReferenceRelationship(newPart),
+                                _ => null,
+                            };
 
-                        id = mrr?.Id;
-                        relationshipType = mrr?.RelationshipType;
-                        break;
-                    }
+                            id = mrr?.Id;
+                            relationshipType = mrr?.RelationshipType;
+                            break;
+                        }
                     case "video":
-                    {
-                        var vrr = newContentPart switch
                         {
-                            SlidePart part => part.AddVideoReferenceRelationship(newPart),
-                            HandoutMasterPart part => part.AddVideoReferenceRelationship(newPart),
-                            NotesMasterPart part => part.AddVideoReferenceRelationship(newPart),
-                            NotesSlidePart part => part.AddVideoReferenceRelationship(newPart),
-                            SlideLayoutPart part => part.AddVideoReferenceRelationship(newPart),
-                            SlideMasterPart part => part.AddVideoReferenceRelationship(newPart),
-                            _ => null,
-                        };
+                            var vrr = newContentPart switch
+                            {
+                                SlidePart part => part.AddVideoReferenceRelationship(newPart),
+                                HandoutMasterPart part => part.AddVideoReferenceRelationship(newPart),
+                                NotesMasterPart part => part.AddVideoReferenceRelationship(newPart),
+                                NotesSlidePart part => part.AddVideoReferenceRelationship(newPart),
+                                SlideLayoutPart part => part.AddVideoReferenceRelationship(newPart),
+                                SlideMasterPart part => part.AddVideoReferenceRelationship(newPart),
+                                _ => null,
+                            };
 
-                        id = vrr?.Id;
-                        relationshipType = vrr?.RelationshipType;
-                        break;
-                    }
+                            id = vrr?.Id;
+                            relationshipType = vrr?.RelationshipType;
+                            break;
+                        }
                 }
                 temp.AddContentPartRelTypeResourceIdTupple(newContentPart, relationshipType, id);
                 imageReference.Attribute(attributeName).Set(id);
@@ -1157,53 +1157,27 @@ internal sealed partial class FluentPresentationBuilder
                         continue;
 
                     // Check if this relationship exists
-                    var relationshipExists = false;
-
-                    // Check internal relationships
-                    if (part.Parts.Any(p => p.RelationshipId == relId))
-                        relationshipExists = true;
-
-                    // Check hyperlink relationships
-                    if (!relationshipExists && part.HyperlinkRelationships.Any(h => h.Id == relId))
-                        relationshipExists = true;
-
-                    // Check external relationships
-                    if (!relationshipExists && part.ExternalRelationships.Any(e => e.Id == relId))
-                        relationshipExists = true;
-
-                    // Check data part reference relationships (for media)
-                    if (!relationshipExists && part.DataPartReferenceRelationships.Any(d => d.Id == relId))
-                        relationshipExists = true;
+                    var relationshipExists = CheckRelationshipExists(part, relId);
 
                     // If relationship doesn't exist, handle it
                     if (!relationshipExists)
                     {
-                        // For rId1, which is commonly used for various purposes, try to determine the context
-                        if (relId == "rId1")
+                        // Check if this might be an intentionally preserved reference
+                        if (IsIntentionallyPreservedReference(part, element, relId))
                         {
-                            // Check if this is in a slide layout reference
-                            if (element.Name == P.sldLayoutId || element.Parent?.Name == P.sldLayoutIdLst)
-                            {
-                                // This is likely a slide layout reference - remove the entire element
-                                element.Remove();
-                                modified = true;
-                            }
-                            else if (element.Name == P.notesMaster || element.Name == P.handoutMaster)
-                            {
-                                // Remove references to missing notes/handout masters
-                                element.Remove();
-                                modified = true;
-                            }
-                            else
-                            {
-                                // For other cases, remove the attribute to prevent validation errors
-                                attr.Remove();
-                                modified = true;
-                            }
+                            // Skip removal for intentionally preserved references
+                            continue;
+                        }
+
+                        // Handle based on context
+                        if (ShouldRemoveElement(element, relId))
+                        {
+                            element.Remove();
+                            modified = true;
                         }
                         else
                         {
-                            // For other relationship IDs, remove the attribute
+                            // For other cases, remove the attribute to prevent validation errors
                             attr.Remove();
                             modified = true;
                         }
@@ -1217,5 +1191,78 @@ internal sealed partial class FluentPresentationBuilder
                 part.PutXDocument(xDoc);
             }
         }
+    }
+
+    /// <summary>
+    /// Checks if a relationship exists in any of the part's relationship collections.
+    /// </summary>
+    private bool CheckRelationshipExists(OpenXmlPart part, string relId)
+    {
+        return part.Parts.Any(p => p.RelationshipId == relId) ||
+               part.HyperlinkRelationships.Any(h => h.Id == relId) ||
+               part.ExternalRelationships.Any(e => e.Id == relId) ||
+               part.DataPartReferenceRelationships.Any(d => d.Id == relId);
+    }
+
+    /// <summary>
+    /// Determines if a reference is intentionally preserved for future use rather than truly orphaned.
+    /// This is especially important for slide masters that may have multiple layout references
+    /// where some layouts exist and others are preserved for future slide additions.
+    /// </summary>
+    private bool IsIntentionallyPreservedReference(OpenXmlPart part, XElement element, string relId)
+    {
+        // Check if this is a master part with layout references
+        if (part is SlideMasterPart && element.Name == P.sldLayoutId)
+        {
+            // Check if there are other layouts with valid relationships
+            var layoutList = element.Parent;
+            if (layoutList?.Name == P.sldLayoutIdLst)
+            {
+                var allLayoutRefs = layoutList.Elements(P.sldLayoutId)
+                    .Select(e => e.Attribute(R.id)?.Value)
+                    .Where(id => !string.IsNullOrEmpty(id))
+                    .ToList();
+
+                // If there are multiple layout references and some have valid relationships,
+                // this might be an intentionally preserved set for future use
+                if (allLayoutRefs.Count > 1)
+                {
+                    var validRefsCount = allLayoutRefs.Count(id => CheckRelationshipExists(part, id));
+                    var invalidRefsCount = allLayoutRefs.Count - validRefsCount;
+
+                    // If we have both valid and invalid references, and the number of invalid
+                    // references is reasonable (not more than valid ones), preserve them
+                    if (validRefsCount > 0 && invalidRefsCount <= validRefsCount)
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        // For other cases, check if this looks like a preserved reference pattern
+        // You could extend this with other patterns as needed
+
+        return false;
+    }
+
+    /// <summary>
+    /// Determines if an entire element should be removed due to broken relationships.
+    /// </summary>
+    private static bool ShouldRemoveElement(XElement element)
+    {
+        // Remove entire element for critical broken references that can't be preserved
+        if (element.Name == P.notesMaster || element.Name == P.handoutMaster)
+        {
+            return true;
+        }
+
+        // For slide layout references that are not in a master (standalone broken layout refs)
+        if (element.Name == P.sldLayoutId && element.Parent?.Name != P.sldLayoutIdLst)
+        {
+            return true;
+        }
+
+        return false;
     }
 }
